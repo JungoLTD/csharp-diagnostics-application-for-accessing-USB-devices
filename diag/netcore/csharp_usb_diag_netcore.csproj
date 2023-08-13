@@ -1,0 +1,113 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../../../../include/wd_ver.proj" />
+  <PropertyGroup>
+    <TargetFramework>$(NetcoreVersion)-windows</TargetFramework>
+    <ProjectType>Local</ProjectType>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <OutputType>WinExe</OutputType>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <AssemblyName>csharp_usb_diag_netcore</AssemblyName>
+    <RootNamespace>csharp_usb_diag_netcore</RootNamespace>
+    <Platforms>x64;ARM64</Platforms>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishSingleFile>true</PublishSingleFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	<NoWarn>CA1416</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <BaseAddress>285212672</BaseAddress>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <BaseAddress>285212672</BaseAddress>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <BaseAddress>285212672</BaseAddress>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <BaseAddress>285212672</BaseAddress>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Update="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Update="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Update="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Update="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+    <Reference Include="usb_lib_netcore.dll">
+      <Name>usb_lib_netcore.dll</Name>
+        <HintPath Condition=" '$(BinaryOutDir)' != '' ">$(BinaryOutDir)/../../../lib/netcore/$(ARCH)/$(Configuration)/usb_lib_netcore.dll</HintPath>
+        <HintPath Condition=" '$(BinaryOutDir)' == '' ">../../lib/netcore/$(Configuration)/usb_lib_netcore.dll</HintPath>
+    </Reference>
+      <Reference Include="wdapi_netcore$(WDVersion).dll">
+          <Name>wdapi_netcore$(WDVersion).dll</Name>
+          <HintPath Condition=" '$(BinaryOutDir)' != '' ">$(BinaryOutDir)/../../../../../../src/wdapi_netcore/$(ARCH)/$(Configuration)/wdapi_netcore$(WDVersion).dll</HintPath>
+          <HintPath Condition=" '$(BinaryOutDir)' == '' ">../../../../../lib/wdapi_netcore$(WDVersion).dll</HintPath>
+      </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <SupportedPlatform Include="windows" />
+    <Compile Update="..\DeviceTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\AssemblyInfo.cs" />
+    <Compile Include="..\DeviceTabPage.cs" />
+    <Compile Include="..\FormChangeSettings.cs" />
+    <Compile Include="..\FormTransfers.cs" />
+    <Compile Include="..\UsbSample.cs" />
+
+    <EmbeddedResource Include="..\DeviceTabPage.resx" />
+    <EmbeddedResource Include="..\FormChangeSettings.resx" />
+    <EmbeddedResource Include="..\FormTransfers.resx" />
+    <EmbeddedResource Include="..\UsbSample.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.2.222702">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <DefineConstants>WIN32</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
+    <DefineConstants>UNIX</DefineConstants>
+  </PropertyGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition=" '$(OS)' == 'Windows_NT' ">
+		<Exec Condition=" '$(BinaryOutDir)' == '' " Command=
+          "if not exist ../../lib/netcore/$(Configuration)/usb_lib_netcore.dll (
+            echo The current build configuration is: '$(Configuration)', which mismatch the build configuration of 'usb_lib_netcore.dll'
+            exit /b 1
+          )
+          exit /b 0" />
+	</Target>
+</Project>
